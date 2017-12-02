@@ -2,7 +2,7 @@
 
 from urllib.parse import urlparse
 from gmapi import api
-import gmapi, shlex, sys, http.client, http.server
+import gmapi, shlex, sys, http.client, http.server, json, cmd
 
 def fetchPastebin(fileId):
     conn = http.client.HTTPSConnection('pastebin.com')
@@ -60,16 +60,17 @@ def fetchCode(url):
 
 class CallbackHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
-        msg = gmapi.Message(json.loads(self.rfile.read()))
-        print(msg)
-        #msgParser.parseMessage(msg.text)
+        print('callback: new message')
+        length = int(self.headers['content-length'])
+        msg = gmapi.Message(json.loads(self.rfile.read(length).decode('utf-8')))
+        msgParser.parseMessage(msg.text)
 
-def run(host, port, api):
+def run(host, port):
     httpd = http.server.HTTPServer((host, port), CallbackHandler)
     httpd.serve_forever()
 
 host = '0.0.0.0'
-port = 8080
+port = 1234
 
 sys.stdout.write('Input access token: ')
 token = input()
@@ -89,8 +90,8 @@ for i in range(len(bots)):
 sys.stdout.write('Select the bot as output (input the index): ')
 
 bot = bots[int(input()) - 1]
-#msgParser = cmd.CmdParser(bot.postMessage)
-
+msgParser = cmd.CmdParser(bot.postMessage)
+run(host, port)
 
 
 
