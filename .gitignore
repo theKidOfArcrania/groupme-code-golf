@@ -1,0 +1,4 @@
+**/auth-token
+**/*.swp
+**/__pycache__
+**/*.pyc
